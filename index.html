@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathKub - A Math Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --accent-blue: #4a9eff;
+            --accent-light: #6bb3ff;
+            --text-main: #e0e6ff;
+            --text-secondary: #a0a8cc;
+            --border: #2a3f5f;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Barra de navegación */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            text-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Contenedor principal */
+        main {
+            padding-top: 80px;
+        }
+
+        section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Portada */
+        #portada {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2f4d 100%);
+        }
+
+        .titulo-principal {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .descripcion-portada {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .boton-scroll {
+            margin-top: 3rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .boton-scroll svg {
+            width: 30px;
+            height: 30px;
+            stroke: var(--accent-blue);
+        }
+
+        /* Tarjetas */
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 32px rgba(74, 158, 255, 0.15);
+            transform: translateY(-5px);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-blue);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-light);
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Fichas */
+        .fichas-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .ficha {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-light));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--dark-bg);
+            box-shadow: 0 4px 15px rgba(74, 158, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .ficha:hover {
+            transform: scale(1.1) rotateY(10deg);
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+        }
+
+        .ficha-comodin {
+            background: linear-gradient(135deg, #ff6b9d, #ff8fab);
+        }
+
+        .ficha-operador {
+            background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+            font-size: 1.8rem;
+        }
+
+        .ficha-igual {
+            background: linear-gradient(135deg, #34d399, #6ee7b7);
+        }
+
+        /* Distribución de fichas */
+        .distribucion {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .distribucion-item {
+            background: rgba(74, 158, 255, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .distribucion-item:hover {
+            background: rgba(74, 158, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .distribucion-item strong {
+            display: block;
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .distribucion-item span {
+            color: var(--text-secondary);
+        }
+
+        /* Ejemplos de ecuaciones */
+        .ecuacion-ejemplo {
+            background: rgba(74, 158, 255, 0.08);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .ecuacion-ejemplo:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 158, 255, 0.12);
+        }
+
+        .fichas-ecuacion {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .ficha-ejemplo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-light));
+            border-radius: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: var(--dark-bg);
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
+        }
+
+        .ficha-ejemplo.operador {
+            background: linear-gradient(135deg, #a78bfa, #c4b5fd);
+        }
+
+        .ficha-ejemplo.igual {
+            background: linear-gradient(135deg, #34d399, #6ee7b7);
+        }
+
+        .ecuacion-texto {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Lista de reglas */
+        .reglas-lista {
+            background: rgba(74, 158, 255, 0.08);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .reglas-lista li {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .reglas-lista li strong {
+            color: var(--accent-light);
+        }
+
+        /* Beneficios educativos */
+        .beneficios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .beneficio-card {
+            background: rgba(52, 211, 153, 0.1);
+            border-left: 4px solid #34d399;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .beneficio-card:hover {
+            background: rgba(52, 211, 153, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .beneficio-card strong {
+            display: block;
+            color: #6ee7b7;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .beneficio-card span {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 20, 25, 0.8);
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 2rem 1rem;
+            }
+
+            .titulo-principal {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .fichas-container {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+
+            .ficha {
+                font-size: 1.2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegación -->
+    <nav>
+        <div class="logo">MathKub</div>
+        <ul class="nav-links">
+            <li><a href="#portada">Home</a></li>
+            <li><a href="#objetivo">Goal</a></li>
+            <li><a href="#fichas">Tiles</a></li>
+            <li><a href="#reglas">Rules</a></li>
+            <li><a href="#ejemplos">Examples</a></li>
+            <li><a href="#educativo">Learning</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- SECCIÓN 1: PORTADA -->
+        <section id="portada">
+            <h1 class="titulo-principal">MathKub</h1>
+            <p class="descripcion-portada">
+                MathKub is a math game like Rummikub where players make correct equations using numbers and math operators.
+            </p>
+            <div class="boton-scroll">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14"></path>
+                    <path d="M19 12l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: OBJETIVO DEL JUEGO -->
+        <section id="objetivo">
+            <div class="card">
+                <h2>Game Goal</h2>
+                <p style="font-size: 1.2rem; color: var(--text-main); font-weight: 500;">
+                    The goal is to be the <strong>first player to have no tiles left</strong> by making correct math equations.
+                </p>
+                <p style="margin-top: 1.5rem;">
+                    All players start with the same number of tiles and must make correct equations using numbers and operators. The first person to use all their tiles wins.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: FICHAS -->
+        <section id="fichas">
+            <div class="card">
+                <h2>🎲 The Tiles</h2>
+                
+                <h3>Numbers (0 to 14)</h3>
+                <div class="fichas-container">
+                    <div class="ficha">0</div>
+                    <div class="ficha">1</div>
+                    <div class="ficha">2</div>
+                    <div class="ficha">3</div>
+                    <div class="ficha">4</div>
+                    <div class="ficha">5</div>
+                    <div class="ficha">6</div>
+                    <div class="ficha">7</div>
+                    <div class="ficha">8</div>
+                    <div class="ficha">9</div>
+                    <div class="ficha">10</div>
+                    <div class="ficha">11</div>
+                    <div class="ficha">12</div>
+                    <div class="ficha">13</div>
+                    <div class="ficha">14</div>
+                </div>
+
+                <h3>Operators and Equal Sign</h3>
+                <div class="fichas-container">
+                    <div class="ficha ficha-operador">+</div>
+                    <div class="ficha ficha-operador">−</div>
+                    <div class="ficha ficha-operador">×</div>
+                    <div class="ficha ficha-operador">÷</div>
+                    <div class="ficha ficha-igual">=</div>
+                </div>
+
+                <h3>Wild Cards</h3>
+                <div class="fichas-container">
+                    <div class="ficha ficha-comodin">?</div>
+                    <div class="ficha ficha-comodin">?</div>
+                </div>
+
+                <h3>Tile Distribution</h3>
+                <div class="distribucion">
+                    <div class="distribucion-item">
+                        <strong>+ Plus</strong>
+                        <span>4 tiles</span>
+                    </div>
+                    <div class="distribucion-item">
+                        <strong>− Minus</strong>
+                        <span>4 tiles</span>
+                    </div>
+                    <div class="distribucion-item">
+                        <strong>× Multiply</strong>
+                        <span>3 tiles</span>
+                    </div>
+                    <div class="distribucion-item">
+                        <strong>÷ Divide</strong>
+                        <span>2 tiles</span>
+                    </div>
+                    <div class="distribucion-item">
+                        <strong>= Equal</strong>
+                        <span>8 tiles</span>
+                    </div>
+                    <div class="distribucion-item">
+                        <strong>? Wild Card</strong>
+                        <span>2 tiles</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: REGLAS -->
+        <section id="reglas">
+            <div class="card">
+                <h2>How to Play</h2>
+                
+                <div class="reglas-lista">
+                    <ul>
+                        <li>
+                            <strong>Make correct equations:</strong> 
+                            Players must make correct math equations using number and operator tiles.
+                        </li>
+                        <li>
+                            <strong>Use tiles from the table:</strong> 
+                            You can use tiles that are already on the table to make new equations.
+                        </li>
+                        <li>
+                            <strong>No decimals:</strong> 
+                            No decimal answers. All division must have exact answers.
+                        </li>
+                        <li>
+                            <strong>Wild card:</strong> 
+                            The wild card (?) can be any number or operator.
+                        </li>
+                        <li>
+                            <strong>Win:</strong> 
+                            The first player to use all their tiles wins the game.
+                        </li>
+                        <li>
+                            <strong>Turns:</strong> 
+                            Players take turns placing tiles. If you cannot play, take a tile from the pile.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: EJEMPLOS -->
+        <section id="ejemplos">
+            <div class="card">
+                <h2>Example Equations</h2>
+                
+                <div class="ecuacion-ejemplo">
+                    <p style="text-align: center; margin-bottom: 1rem; font-weight: 500;">Example 1: Simple Addition</p>
+                    <div class="fichas-ecuacion">
+                        <div class="ficha-ejemplo">3</div>
+                        <div class="ficha-ejemplo operador">+</div>
+                        <div class="ficha-ejemplo">4</div>
+                        <div class="ficha-ejemplo igual">=</div>
+                        <div class="ficha-ejemplo">7</div>
+                    </div>
+                    <p class="ecuacion-texto">3 + 4 = 7 ✓</p>
+                </div>
+
+                <div class="ecuacion-ejemplo">
+                    <p style="text-align: center; margin-bottom: 1rem; font-weight: 500;">Example 2: Exact Division</p>
+                    <div class="fichas-ecuacion">
+                        <div class="ficha-ejemplo">8</div>
+                        <div class="ficha-ejemplo operador">÷</div>
+                        <div class="ficha-ejemplo">2</div>
+                        <div class="ficha-ejemplo igual">=</div>
+                        <div class="ficha-ejemplo">4</div>
+                    </div>
+                    <p class="ecuacion-texto">8 ÷ 2 = 4 ✓</p>
+                </div>
+
+                <div class="ecuacion-ejemplo">
+                    <p style="text-align: center; margin-bottom: 1rem; font-weight: 500;">Example 3: Multiplication</p>
+                    <div class="fichas-ecuacion">
+                        <div class="ficha-ejemplo">5</div>
+                        <div class="ficha-ejemplo operador">×</div>
+                        <div class="ficha-ejemplo">2</div>
+                        <div class="ficha-ejemplo igual">=</div>
+                        <div class="ficha-ejemplo">10</div>
+                    </div>
+                    <p class="ecuacion-texto">5 × 2 = 10 ✓</p>
+                </div>
+
+                <div class="ecuacion-ejemplo">
+                    <p style="text-align: center; margin-bottom: 1rem; font-weight: 500;">Example 4: With Wild Card</p>
+                    <div class="fichas-ecuacion">
+                        <div class="ficha-ejemplo">6</div>
+                        <div class="ficha-ejemplo operador">−</div>
+                        <div class="ficha-ejemplo" style="background: linear-gradient(135deg, #ff6b9d, #ff8fab);">?</div>
+                        <div class="ficha-ejemplo igual">=</div>
+                        <div class="ficha-ejemplo">2</div>
+                    </div>
+                    <p class="ecuacion-texto">6 − ? = 2 (wild card is 4) ✓</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6: PROPÓSITO EDUCATIVO -->
+        <section id="educativo">
+            <div class="card">
+                <h2>🎓 Learning Benefits</h2>
+                <p style="margin-bottom: 2rem;">
+                    MathKub is more than just a fun game. It is a tool that helps students learn and practice math skills.
+                </p>
+                
+                <div class="beneficios">
+                    <div class="beneficio-card">
+                        <strong>Mental Math</strong>
+                        <span>Get faster and better at doing math in your head.</span>
+                    </div>
+                    <div class="beneficio-card">
+                        <strong>Basic Math</strong>
+                        <span>Practice addition, subtraction, multiply, and divide.</span>
+                    </div>
+                    <div class="beneficio-card">
+                        <strong>Thinking Skills</strong>
+                        <span>Develop strategy and problem-solving skills.</span>
+                    </div>
+                    <div class="beneficio-card">
+                        <strong>Learn by Playing</strong>
+                        <span>Make learning fun and interesting through games.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>MathKub © 2024 | A presentation of a math game based on Rummikub</p>
+    </footer>
+
+    <script>
+        // Efecto de scroll suave en los links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Efecto interactivo en las fichas
+        document.querySelectorAll('.ficha').forEach(ficha => {
+            ficha.addEventListener('click', function() {
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 10);
+                this.style.transform = 'rotateY(180deg) scale(1.15)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 300);
+            });
+        });
+
+        // Animación al hacer scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
